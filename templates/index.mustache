@@ -1,0 +1,16 @@
+<html>
+  <head>
+    <title>HTTPS Everywhere Atlas</title>
+  </head>
+  <body>
+    <h1>HTTPS Everywhere Atlas</h1>
+
+    <p>Are you a website operating? If your domain name is listed below you can click on it to see which HTTPS Everywhere rules interact with your site.</p>
+    
+    <ul>
+      {{#domains}}
+        <li><a href="domain/{{domain}}.html">{{domain}}</a></li>
+      {{/domains}}
+    </ul>
+  </body>
+</html>
