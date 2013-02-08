@@ -11,6 +11,18 @@ ps = publicsuffix.PublicSuffixList()
 
 affected = {}
 
+def clone_or_update():
+    if os.path.isdir("https-everywhere"):
+        os.chdir("https-everywhere/src/chrome/content/rules")
+        unstable()
+        result = subprocess.call(["git", "pull"])
+        if result != 0:
+            raise Exception, "Could not pull updates"
+    else:
+        result = subprocess.call(["git", "clone",  HTTPS_E])
+        if result != 0:
+            raise Exception, "Could not clone %s" % HTTPS_E
+
 def stable():
     if subprocess.call(["git", "checkout", stable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % stable_branch
@@ -53,16 +65,7 @@ def get_names(branch):
                 if dfo: out = "([file %s] %s  %s)"
                 else: out = "[file %s] %s  %s"
 
-result = subprocess.call(["git", "clone",  HTTPS_E])
-
-# TEMPORARILY don't actually require clone to succeed
-# ... in the future, we will check whether we already
-# have a checkout and do a git pull to update it!
-
-# if result != 0:
-#     raise Exception, "Could not clone %s" % HTTPS_E
-
-os.chdir("https-everywhere/src/chrome/content/rules")
+clone_or_update()
 
 sys.stderr.write("Checking unstable branch master:\n")
 unstable()
