@@ -5,7 +5,7 @@ from lxml import etree
 
 HTTPS_E = "git://git.torproject.org/git/https-everywhere.git"
 unstable_branch = "master"
-stable_branch = "3.0"
+stable_branch = "stable"
 
 ps = publicsuffix.PublicSuffixList()
 
