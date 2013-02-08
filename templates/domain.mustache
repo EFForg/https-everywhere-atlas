@@ -7,6 +7,57 @@
 
     <h2>Domain: {{domain}}</h2>
 
-    <p>TODO: display all the information about this domain here</p>
+    {{affected_releases}}
+
+    <br />
+    <p>
+    Embedded content loaded from third-party domains (for example, YouTube,
+    Google Analytics, ad networks, or CDNs) may also be affected.  You can
+    test this by loading the web page ... </p>
+
+    {{#stable_affected}}
+    <br />
+    {{#stable_has_enabled}}
+    The stable branch contains the following rules that are enabled by
+    default:
+      {{#stable_enabled}}
+      {{rule_text}} {{git_link}}   File a bug link
+      {{/stable_enabled}}
+    {{/stable_has_enabled}}
+
+    {{#stable_has_disabled}}
+    The stable branch contains the following rules that are <strong>disabled by
+    default</strong> (so very few users' browsing is likely to be affected by
+    their action):
+      {{#stable_disabled}}
+      {{rule_text}} {{git_link}}   File a bug link
+      {{/stable_disabled}}
+    {{/stable_has_disabled}}
+    {{/stable_affected}}
+
+    {{#unstable_affected}}
+    <br />
+    {{#unstable_has_enabled}}
+    The unstable branch contains the following rules that are enabled by
+    default:
+      {{#unstable_enabled}}
+      {{rule_text}} {{git_link}}   File a bug link
+      {{/unstable_enabled}}
+    {{/unstable_has_enabled}}
+
+    {{#unstable_has_disabled}}
+    The unstable branch contains the following rules that are <strong>disabled by
+    default</strong> (so very few users' browsing is likely to be affected by
+    their action):
+      {{#unstable_disabled}}
+      {{rule_text}} {{git_link}}   File a bug link
+      {{/unstable_disabled}}
+    {{/unstable_has_disabled}}
+    {{/unstable_affected}}
+
+    <br />
+    Notification to webmaster@: {{webmaster_notification}}
+    Notification to DNS contact: {{dns_notification}}
+
   </body>
 </html>
