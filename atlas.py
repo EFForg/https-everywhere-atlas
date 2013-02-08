@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, sys, publicsuffix
+import subprocess, os, sys, publicsuffix, pystache
 from lxml import etree
 
 HTTPS_E = "git://git.torproject.org/git/https-everywhere.git"
@@ -9,7 +9,10 @@ stable_branch = "3.0"
 
 ps = publicsuffix.PublicSuffixList()
 
-affected = {}
+template = open("templates/domain.mustache").read()
+
+stable_affected = {}
+unstable_affected = {}
 
 def clone_or_update():
     if os.path.isdir("https-everywhere"):
@@ -32,6 +35,10 @@ def unstable():
         raise Exception, "Could not switch to branch %s" % unstable_branch
 
 def get_names(branch):
+    if branch == stable_branch:
+        affected = stable_affected
+    else:
+        affected = unstable_affected
     for fi in sorted(os.listdir(".")):
         if fi[-4:] == ".xml":
             tree = etree.parse(fi)
@@ -59,7 +66,7 @@ def get_names(branch):
                         host = host[2:]
                     # print host
                     affected.setdefault(host, [])
-                    host_data = (branch, fi, name, dfo, etree.tostring(tree))
+                    host_data = (fi, name, dfo, unicode(etree.tostring(tree)).encode("utf-8"))
                     affected[host].append(host_data)
                     hosts.append(host)
                 if dfo: out = "([file %s] %s  %s)"
@@ -75,13 +82,58 @@ sys.stderr.write("Checking stable branch %s:\n" % stable_branch)
 stable()
 get_names(stable_branch)
 
-for n in affected:
+os.chdir("../../../../..")
+for n in sorted(set(stable_affected.keys() + unstable_affected.keys())):
+    d = {}
+    d["domain"] = n
+    d["affected_releases"] = ""
+    d["stable_affected"] = False
+    d["unstable_affected"] = False
+    if n in stable_affected and n in unstable_affected:
+        d["affected_releases"] = """The stable and development releases of HTTPS
+                                 Everywhere currently rewrite requests to
+                                 <b>%s</b> (or its subdomains).""" % n
     print "Domain", n
-    for effect in affected[n]:
-        branch, fi, name, dfo, xml = effect
-        print "\tBranch:", branch
-        print "\tRuleset: %s   (%s)" % (name, fi)
-        if dfo: print "\tDEFAULT OFF"
-        print "\tXML: (%d bytes)" % len(xml)
-        print
-    print
+    if n in stable_affected:
+        d["stable_affected"] = True
+        if not d["affected_releases"]:
+            d["affected_releases"] = """The stable release of HTTPS
+                                     Everywhere currently rewrites requests to
+                                     <b>%s</b> (or its subdomains).""" % n
+        d["stable_enabled"] = []
+        d["stable_disabled"] = []
+        for effect in stable_affected[n]:
+            fi, name, dfo, xml = effect
+            if dfo:
+                d["stable_disabled"].append({"rule_text": xml, "git_link": fi})
+            else:
+                d["stable_enabled"].append({"rule_text": xml, "git_link": fi})
+#            print "\tBranch:", stable_branch
+#            print "\tRuleset: %s   (%s)" % (name, fi)
+#            if dfo: print "\tDEFAULT OFF"
+#            print "\tXML: (%d bytes)" % len(xml)
+#            print
+        if d["stable_disabled"]: d["stable_has_disabled"] = True
+        if d["stable_enabled"]: d["stable_has_enabled"] = True
+    if n in unstable_affected:
+        d["unstable_affected"] = True
+        if not d["affected_releases"]:
+            d["affected_releases"] = """The unstable release of HTTPS
+                                     Everywhere currently rewrites requests to
+                                     <b>%s</b> (or its subdomains).""" % n
+        d["unstable_enabled"] = []
+        d["unstable_disabled"] = []
+        for effect in unstable_affected[n]:
+            fi, name, dfo, xml = effect
+            if dfo:
+                d["unstable_disabled"].append({"rule_text": xml, "git_link": fi})
+            else:
+                d["unstable_enabled"].append({"rule_text": xml, "git_link": fi})
+#            print "\tBranch:", unstable_branch
+#            print "\tRuleset: %s   (%s)" % (name, fi)
+#            if dfo: print "\tDEFAULT OFF"
+#            print "\tXML: (%d bytes)" % len(xml)
+#            print
+        if d["unstable_disabled"]: d["unstable_has_disabled"] = True
+        if d["unstable_enabled"]: d["unstable_has_enabled"] = True
+    open("output/" + n + ".html", "w").write(pystache.render(template, d))
