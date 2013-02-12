@@ -5,7 +5,7 @@ from lxml import etree
 
 HTTPS_E = "git://git.torproject.org/git/https-everywhere.git"
 unstable_branch = "master"
-stable_branch = "stable"
+stable_branch = "3.0"
 
 ps = publicsuffix.PublicSuffixList()
 
@@ -136,4 +136,9 @@ for n in sorted(set(stable_affected.keys() + unstable_affected.keys())):
 #            print
         if d["unstable_disabled"]: d["unstable_has_disabled"] = True
         if d["unstable_enabled"]: d["unstable_has_enabled"] = True
-    open("output/" + n + ".html", "w").write(pystache.render(template, d))
+
+    if not os.path.exists('output'):
+        os.mkdir('output')
+
+    output = pystache.render(template, d)
+    open("output/" + n + ".html", "w").write(output)
