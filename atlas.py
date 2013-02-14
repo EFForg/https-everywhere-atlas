@@ -32,12 +32,14 @@ def stable():
         raise Exception, "Could not switch to branch %s" % stable_branch
     if subprocess.call(["git", "merge", "origin/" + stable_branch]) != 0:
         raise Exception, "Could not merge from origin on branch %s" % stable_branch
+    return subprocess.check_output(["git", "log", "-1", "--pretty=format:%h %ai"])
 
 def unstable():
     if subprocess.call(["git", "checkout", unstable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % unstable_branch
     if subprocess.call(["git", "merge", "origin/" + unstable_branch]) != 0:
         raise Exception, "Could not merge from origin on branch %s" % unstable_branch
+    return subprocess.check_output(["git", "log", "-1", "--pretty=format:%h %ai"])
 
 def get_names(branch):
     if branch == stable_branch:
@@ -80,11 +82,11 @@ def get_names(branch):
 clone_or_update()
 
 sys.stderr.write("Checking unstable branch master:\n")
-unstable()
+unstable_as_of = unstable()
 get_names(unstable_branch)
 
 sys.stderr.write("Checking stable branch %s:\n" % stable_branch)
-stable()
+stable_as_of = stable()
 get_names(stable_branch)
 
 os.chdir("../../../../..")
@@ -99,6 +101,8 @@ open("output/index.html", "w").write(output.encode("utf-8"))
 
 for n in domains:
     d = {}
+    d["stable_as_of"] = stable_as_of
+    d["unstable_as_of"] = unstable_as_of
     d["domain"] = n
     d["affected_releases"] = ""
     d["stable_affected"] = False
