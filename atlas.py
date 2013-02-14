@@ -29,10 +29,14 @@ def clone_or_update():
 def stable():
     if subprocess.call(["git", "checkout", stable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % stable_branch
+    if subprocess.call(["git", "merge", "origin/" + stable_branch]) != 0:
+        raise Exception, "Could not merge from origin on branch %s" % stable_branch
 
 def unstable():
     if subprocess.call(["git", "checkout", unstable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % unstable_branch
+    if subprocess.call(["git", "merge", "origin/" + unstable_branch]) != 0:
+        raise Exception, "Could not merge from origin on branch %s" % unstable_branch
 
 def get_names(branch):
     if branch == stable_branch:
