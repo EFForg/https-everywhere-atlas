@@ -126,11 +126,6 @@ for n in domains:
                 d["stable_disabled"].append({"rule_text": xml, "git_link": fi})
             else:
                 d["stable_enabled"].append({"rule_text": xml, "git_link": fi})
-#            print "\tBranch:", stable_branch
-#            print "\tRuleset: %s   (%s)" % (name, fi)
-#            if dfo: print "\tDEFAULT OFF"
-#            print "\tXML: (%d bytes)" % len(xml)
-#            print
         if d["stable_disabled"]: d["stable_has_disabled"] = True
         if d["stable_enabled"]: d["stable_has_enabled"] = True
     if n in unstable_affected:
@@ -147,11 +142,6 @@ for n in domains:
                 d["unstable_disabled"].append({"rule_text": xml, "git_link": fi})
             else:
                 d["unstable_enabled"].append({"rule_text": xml, "git_link": fi})
-#            print "\tBranch:", unstable_branch
-#            print "\tRuleset: %s   (%s)" % (name, fi)
-#            if dfo: print "\tDEFAULT OFF"
-#            print "\tXML: (%d bytes)" % len(xml)
-#            print
         if d["unstable_disabled"]: d["unstable_has_disabled"] = True
         if d["unstable_enabled"]: d["unstable_has_enabled"] = True
 
