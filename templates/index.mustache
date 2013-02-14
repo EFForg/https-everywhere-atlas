@@ -1,17 +1,21 @@
 <html>
   <head>
     <title>HTTPS Everywhere Atlas</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
-    <h1>HTTPS Everywhere Atlas</h1>
+    <div id="wrapper">
+      <h1>HTTPS Everywhere Atlas</h1>
 
-    <p>Are you a website operator? If your domain name is listed below you can click on it to see which HTTPS Everywhere rules interact with your site.</p>
-    
-    <ul>
-      {{#domains}}
-      <li><a href="{{domain}}.html">{{domain}}</a></li>
-      {{/domains}}
-    </ul>
+      <div id="content">
+        <p>Are you a website operator? If your domain name is listed below you can click on it to see which HTTPS Everywhere rules interact with your site.</p>
+        
+        <ul id="domain-list">
+          {{#domains}}
+          <li><a href="domains/{{domain}}.html">{{domain}}</a></li>
+          {{/domains}}
+        </ul>
+      </div>
+    </div>
   </body>
 </html>

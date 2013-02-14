@@ -151,8 +151,8 @@ for n in domains:
         if d["unstable_disabled"]: d["unstable_has_disabled"] = True
         if d["unstable_enabled"]: d["unstable_has_enabled"] = True
 
-    if not os.path.exists('output'):
-        os.mkdir('output')
+    if not os.path.exists('output/domains'):
+        os.mkdir('output/domains')
 
     output = pystache.render(domain_template, d)
-    open("output/" + n + ".html", "w").write(output.encode("utf-8"))
+    open("output/domains/" + n + ".html", "w").write(output.encode("utf-8"))

@@ -1,68 +1,78 @@
 <html>
   <head>
     <title>HTTPS Everywhere Atlas</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../highlight.js/styles/default.css">
+    <script src="../highlight.js/highlight.pack.js"></script>
+    <script>
+    function syntax_highlight() {
+      hljs.initHighlighting();
+      var pre_tags = document.getElementsByTagName('pre');
+      for(var i=0; i<pre_tags.length; i++) {
+        hljs.highlightBlock(pre_tags[i]);
+      }
+    }
+    </script>
   </head>
-  <body>
-    <h1><a href="index.html">HTTPS Everywhere Atlas</a></h1>
+  <body onload="syntax_highlight()">
+    <div id="wrapper">
+      <h1><a href="../index.html">HTTPS Everywhere Atlas</a></h1>
 
-    <h2>Domain: {{domain}}</h2>
+      <div id="content">
 
-    {{{affected_releases}}}
+        <h2>Domain: {{domain}}</h2>
 
-    <hr />
-    <p>
-    Embedded content loaded from third-party domains (for example, YouTube,
-    Google Analytics, ad networks, or CDNs) may also be affected.  You can
-    test this by loading the web page ... </p>
+        <p>{{{affected_releases}}}</p>
 
-    {{#stable_affected}}
-    <hr />
-    {{#stable_has_enabled}}
-    <p>The stable branch contains the following rules that are enabled by
-    default:</p>
-      {{#stable_enabled}}
-      <pre>{{rule_text}}</pre>
-      Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/3.0:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a>
-      {{/stable_enabled}}
-    {{/stable_has_enabled}}
+        <p>Embedded content loaded from third-party domains (for example, YouTube, Google Analytics, ad networks, or CDNs) may also be affected.  You can test this by loading the web page ... </p> 
 
-    {{#stable_has_disabled}}
-    The stable branch contains the following rules that are <strong>disabled by
-    default</strong> (so very few users' browsing is likely to be affected by
-    their action):
-      {{#stable_disabled}}
-      <pre>{{rule_text}}</pre>
-      Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/3.0:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a>
-      {{/stable_disabled}}
-    {{/stable_has_disabled}}
-    {{/stable_affected}}
+        {{#stable_affected}}
+          {{#stable_has_enabled}}
+            <p>The stable branch contains the following rules that are enabled by default:</p>
 
-    {{#unstable_affected}}
-    <hr />
-    {{#unstable_has_enabled}}
-    The unstable branch contains the following rules that are enabled by
-    default:
-      {{#unstable_enabled}}
-      <pre>{{rule_text}}</pre>
-      Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/master:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a>
-      {{/unstable_enabled}}
-    {{/unstable_has_enabled}}
+            {{#stable_enabled}}
+              <pre>{{rule_text}}</pre>
 
-    {{#unstable_has_disabled}}
-    The unstable branch contains the following rules that are <strong>disabled by
-    default</strong> (so very few users' browsing is likely to be affected by
-    their action):
-      {{#unstable_disabled}}
-      <pre>{{rule_text}}</pre>
-      Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/master:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a>
-      {{/unstable_disabled}}
-    {{/unstable_has_disabled}}
-    {{/unstable_affected}}
+              <p>Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/3.0:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a></p>
+            {{/stable_enabled}}
+          {{/stable_has_enabled}}
 
-    <br />
-    Notification to webmaster@: {{webmaster_notification}}
-    Notification to DNS contact: {{dns_notification}}
+          {{#stable_has_disabled}}
+            <p>The stable branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):
+            
+            {{#stable_disabled}}
+              <pre>{{rule_text}}</pre>
+              <p>Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/3.0:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a></p>
+            {{/stable_disabled}}
+          {{/stable_has_disabled}}
+        {{/stable_affected}}
 
+        {{#unstable_affected}}
+          {{#unstable_has_enabled}}
+            <p>The unstable branch contains the following rules that are enabled by default:</p>
+            
+            {{#unstable_enabled}}
+              <pre>{{rule_text}}</pre>
+              <p>Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/master:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a></p>
+            {{/unstable_enabled}}
+          {{/unstable_has_enabled}}
+
+          {{#unstable_has_disabled}}
+            <p>The unstable branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):</p>
+            {{#unstable_disabled}}
+              <pre>{{rule_text}}</pre>
+              <p>Link to history: <a href="https://gitweb.torproject.org/https-everywhere.git/history/master:/src/chrome/content/rules/{{git_link}}">{{git_link}}</a> &nbsp;&nbsp;   <a href="https://trac.torproject.org/">File a bug link</a></p>
+            {{/unstable_disabled}}
+          {{/unstable_has_disabled}}
+        {{/unstable_affected}}
+
+        <p>
+          Notification to webmaster@: {{webmaster_notification}}<br/>
+          Notification to DNS contact: {{dns_notification}}
+        </p>
+
+      </div>
+
+    </div>
   </body>
 </html>
