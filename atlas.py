@@ -9,7 +9,8 @@ stable_branch = "3.0"
 
 ps = publicsuffix.PublicSuffixList()
 
-template = open("templates/domain.mustache").read()
+index_template = open("templates/index.mustache").read()
+domain_template = open("templates/domain.mustache").read()
 
 stable_affected = {}
 unstable_affected = {}
@@ -87,7 +88,16 @@ stable()
 get_names(stable_branch)
 
 os.chdir("../../../../..")
-for n in sorted(set(stable_affected.keys() + unstable_affected.keys())):
+
+domains = sorted(set(stable_affected.keys() + unstable_affected.keys()))
+
+domains_index = []
+for n in domains:
+  domains_index.append({ 'domain': n })
+output = pystache.render(index_template, { 'domains': domains_index })
+open("output/index.html", "w").write(output.encode("utf-8"))
+
+for n in domains:
     d = {}
     d["domain"] = n
     d["affected_releases"] = ""
@@ -144,5 +154,5 @@ for n in sorted(set(stable_affected.keys() + unstable_affected.keys())):
     if not os.path.exists('output'):
         os.mkdir('output')
 
-    output = pystache.render(template, d)
+    output = pystache.render(domain_template, d)
     open("output/" + n + ".html", "w").write(output.encode("utf-8"))

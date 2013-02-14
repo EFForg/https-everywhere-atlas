@@ -1,4 +1,4 @@
 https-everywhere/
 *.pyc
 *.swp
-output
+output/*.html
