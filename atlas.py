@@ -66,7 +66,7 @@ def get_names(branch):
                         host = host[2:]
                     # print host
                     affected.setdefault(host, [])
-                    host_data = (fi, name, dfo, unicode(etree.tostring(tree)).encode("utf-8"))
+                    host_data = (unicode(fi, "utf-8"), name, dfo, unicode(etree.tostring(tree)).encode("utf-8"))
                     affected[host].append(host_data)
                     hosts.append(host)
                 if dfo: out = "([file %s] %s  %s)"
@@ -141,4 +141,4 @@ for n in sorted(set(stable_affected.keys() + unstable_affected.keys())):
         os.mkdir('output')
 
     output = pystache.render(template, d)
-    open("output/" + n + ".html", "w").write(output)
+    open("output/" + n + ".html", "w").write(output.encode("utf-8"))
