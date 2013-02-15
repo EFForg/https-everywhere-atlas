@@ -108,16 +108,18 @@ for n in domains:
     d["stable_affected"] = False
     d["unstable_affected"] = False
     if n in stable_affected and n in unstable_affected:
-        d["affected_releases"] = """The stable and development releases of HTTPS
-                                 Everywhere currently rewrite requests to
-                                 <b>%s</b> (or its subdomains).""" % n
+        d["affected_releases"] = """The stable and development releases of
+                      <a href="https://www.eff.org/https-everywhere">HTTPS
+                      Everywhere</a> currently rewrite requests to
+                      <b>%s</b> (or its subdomains).""" % n
     print "Domain", n
     if n in stable_affected:
         d["stable_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """The stable release of HTTPS
-                                     Everywhere currently rewrites requests to
-                                     <b>%s</b> (or its subdomains).""" % n
+            d["affected_releases"] = """The stable release of
+                      <a href="https://www.eff.org/https-everywhere">HTTPS
+                      Everywhere</a> currently rewrites requests to
+                      <b>%s</b> (or its subdomains).""" % n
         d["stable_enabled"] = []
         d["stable_disabled"] = []
         for effect in stable_affected[n]:
@@ -131,9 +133,10 @@ for n in domains:
     if n in unstable_affected:
         d["unstable_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """The unstable release of HTTPS
-                                     Everywhere currently rewrites requests to
-                                     <b>%s</b> (or its subdomains).""" % n
+            d["affected_releases"] = """The unstable release of
+                      <a href="https://www.eff.org/https-everywhere">HTTPS
+                      Everywhere</a> currently rewrites requests to
+                      <b>%s</b> (or its subdomains).""" % n
         d["unstable_enabled"] = []
         d["unstable_disabled"] = []
         for effect in unstable_affected[n]:
