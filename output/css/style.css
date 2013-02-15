@@ -55,7 +55,8 @@ h1 a:link, h1 a:visited {
 #content ul#domain-list li {
   display: inline-block;
   margin: 5px;
-  width: 200px;
+  width: 220px;
+  overflow: auto;
 }
 
 a:link, a:visited {
