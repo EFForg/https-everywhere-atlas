@@ -4,6 +4,7 @@ See LICENSE-publicsuffix file for authors
 
 import codecs
 import os.path
+import re
 
 class PublicSuffixList(object):
 	def __init__(self, input_file=None):
@@ -92,10 +93,15 @@ class PublicSuffixList(object):
 		Calling this function with a DNS name will return the
 		public suffix for that name.
 
+		Calling this function with an IP address will return the
+		unmodified IP address.
+
 		Note that for internationalized domains the list at
 		http://publicsuffix.org uses decoded names, so it is
 		up to the caller to decode any Punycode-encoded names.
 		"""
+		if re.match("^([0-9]{1,3}\.){3}[0-9]{1,3}$", domain):
+			return domain
 
 		parts = domain.lower().lstrip('.').split('.')
 		hits = [None] * len(parts)
