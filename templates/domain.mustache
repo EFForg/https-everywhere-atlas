@@ -53,7 +53,7 @@
 
         {{#unstable_affected}}
           {{#unstable_has_enabled}}
-            <p>The unstable branch contains the following rules that are enabled by default:</p>
+            <p>The development branch contains the following rules that are enabled by default:</p>
             
             {{#unstable_enabled}}
               <div class="rule-block">
@@ -64,7 +64,7 @@
           {{/unstable_has_enabled}}
 
           {{#unstable_has_disabled}}
-            <p>The unstable branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):</p>
+            <p>The development branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):</p>
             {{#unstable_disabled}}
               <div class="rule-block">
                 <pre>{{rule_text}}</pre>
@@ -82,7 +82,7 @@
           the shared username and password <i>cypherpunks</i> / <i>writecode</i>; please ensure
           that the bug is marked as applying to HTTPS Everywhere.
         </p>
-        <h3>Information current as of: stable tree {{stable_as_of}}; unstable tree {{unstable_as_of}}</h3>
+        <h3>Information current as of:<br />stable tree {{stable_as_of}};<br />development tree {{unstable_as_of}}</h3>
       </div>
 
     </div>
