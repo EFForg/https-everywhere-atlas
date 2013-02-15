@@ -2,3 +2,4 @@ https-everywhere/
 *.pyc
 *.swp
 output/domains
+output/index.html
