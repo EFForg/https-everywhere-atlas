@@ -16,13 +16,16 @@ body {
 }
 
 #wrapper {
+  padding-top: 150px;
   width: 800px;
   margin: 0 auto;
+  background-image: url('../images/logo.jpg');
+  background-repeat: no-repeat;
+  background-position: top center;
 }
 
 h1 {
   color: #ffffff;  
-  margin-top: 170px;
   font-size: 40px;
   text-align: center;
 }
@@ -63,8 +66,18 @@ a:hover, a:active {
   text-decoration: underline;
 }
 
-pre {
-  overflow: auto;
-  padding: 20px;
+.rule-block {
   border: 1px solid #999;
+  padding: 20px;
+}
+
+.rule-block pre {
+  overflow: auto;
+  margin-top: 0;
+  background-color: #f0f0f0;
+  padding: 10px;
+}
+
+.rule-block p {
+  margin: 0;
 }
