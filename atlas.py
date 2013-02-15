@@ -133,7 +133,7 @@ for n in domains:
     if n in unstable_affected:
         d["unstable_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """The unstable release of
+            d["affected_releases"] = """The development release of
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
                       <b>%s</b> (or its subdomains).""" % n
