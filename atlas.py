@@ -48,7 +48,8 @@ def unstable():
         raise Exception, "Could not switch to branch %s" % unstable_branch
     if subprocess.call(["git", "merge", "origin/" + unstable_branch]) != 0:
         raise Exception, "Could not merge from origin on branch %s" % unstable_branch
-    return subprocess.check_output(["git", "log", "-1", "--pretty=format:%h %ai"])
+    #return subprocess.check_output(["git", "log", "-1", "--pretty=format:%h %ai"])
+    return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def get_names(branch):
     if branch == stable_branch:
