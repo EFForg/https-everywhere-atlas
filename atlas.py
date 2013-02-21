@@ -103,6 +103,9 @@ os.chdir("../../../../..")
 
 domains = sorted(set(stable_affected.keys() + unstable_affected.keys()))
 
+first_letters = { "letters": sorted(set(n[0] for n in domains)) }
+# Render this to make the links in the overall index!
+
 def letter_domain_pairs(domains):
     last_letter = domains[0][0]
     domains_index = []
