@@ -103,11 +103,21 @@ os.chdir("../../../../..")
 
 domains = sorted(set(stable_affected.keys() + unstable_affected.keys()))
 
-domains_index = []
-for n in domains:
-  domains_index.append({ 'domain': n })
-output = pystache.render(index_template, { 'domains': domains_index })
-open("output/index.html", "w").write(output.encode("utf-8"))
+def letter_domain_pairs(domains):
+    last_letter = domains[0][0]
+    domains_index = []
+    for n in domains:
+        if n[0] != last_letter:
+            yield last_letter, domains_index
+            last_letter = n[0]
+            domains_index = []
+        domains_index.append({ 'domain': n})
+    yield last_letter, domains_index
+
+for letter, domains_index in letter_domain_pairs(domains):
+    output = pystache.render(index_template, { 'first_letter': letter,
+                                               'domains': domains_index })
+    open("output/%s.html" % letter, "w").write(output.encode("utf-8"))
 
 for n in domains:
     d = {}
