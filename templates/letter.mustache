@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>HTTPS Everywhere Atlas</title>
-    <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="../css/style.css" />
   </head>
   <body>
     <div id="wrapper">
@@ -11,8 +11,16 @@
         <p>Are you a website operator? If your domain name is listed below, you can click on it to see which HTTPS Everywhere rules interact with your site.</p>
 
         <div id="letters">
-          {{#letters}} <a href="letters/{{letter}}.html">{{letter}}</a> {{/letters}}
+          {{#letters}} <a href="../letters/{{letter}}.html">{{letter}}</a> {{/letters}}
         </div>
+
+        <h2>Domain names starting with {{first_letter}}</h2>
+        
+        <ul id="domain-list">
+          {{#domains}}
+          <li><a href="../domains/{{domain}}.html">{{domain}}</a></li>
+          {{/domains}}
+        </ul>
       </div>
     </div>
   </body>

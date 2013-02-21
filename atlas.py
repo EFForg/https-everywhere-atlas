@@ -18,7 +18,9 @@ stable_branch = "3.0"
 ps = publicsuffix.PublicSuffixList()
 
 index_template = open("templates/index.mustache").read()
+letter_template = open("templates/letter.mustache").read()
 domain_template = open("templates/domain.mustache").read()
+redirect_template = open("templates/redirect.mustache").read()
 
 stable_affected = {}
 unstable_affected = {}
@@ -103,8 +105,12 @@ os.chdir("../../../../..")
 
 domains = sorted(set(stable_affected.keys() + unstable_affected.keys()))
 
-first_letters = { "letters": sorted(set(n[0] for n in domains)) }
-# Render this to make the links in the overall index!
+first_letters_list = sorted(set(n[0] for n in domains))
+first_letters = []
+for l in first_letters_list:
+    first_letters.append({ 'letter': l })
+output = pystache.render(index_template, { 'letters': first_letters })
+open("output/index.html", "w").write(output.encode("utf-8"))
 
 def letter_domain_pairs(domains):
     last_letter = domains[0][0]
@@ -117,10 +123,21 @@ def letter_domain_pairs(domains):
         domains_index.append({ 'domain': n})
     yield last_letter, domains_index
 
+redirect_output = pystache.render(redirect_template, { 'redirect': '../' })
+
+if not os.path.exists('output/domains'):
+    os.mkdir('output/domains')
+open("output/domains/index.html", "w").write(redirect_output.encode("utf-8"))
+
+if not os.path.exists('output/letters'):
+    os.mkdir('output/letters')
+open("output/letters/index.html", "w").write(redirect_output.encode("utf-8"))
+
 for letter, domains_index in letter_domain_pairs(domains):
-    output = pystache.render(index_template, { 'first_letter': letter,
-                                               'domains': domains_index })
-    open("output/%s.html" % letter, "w").write(output.encode("utf-8"))
+    output = pystache.render(letter_template, { 'letters': first_letters,
+                                                'first_letter': letter,
+                                                'domains': domains_index })
+    open("output/letters/%s.html" % letter, "w").write(output.encode("utf-8"))
 
 for n in domains:
     d = {}
@@ -170,9 +187,6 @@ for n in domains:
                 d["unstable_enabled"].append({"rule_text": xml, "git_link": fi})
         if d["unstable_disabled"]: d["unstable_has_disabled"] = True
         if d["unstable_enabled"]: d["unstable_has_enabled"] = True
-
-    if not os.path.exists('output/domains'):
-        os.mkdir('output/domains')
 
     output = pystache.render(domain_template, d)
     open("output/domains/" + n + ".html", "w").write(output.encode("utf-8"))

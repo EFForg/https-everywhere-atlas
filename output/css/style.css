@@ -82,3 +82,9 @@ a:hover, a:active {
 .rule-block p {
   margin: 0;
 }
+
+#letters {
+  text-align: center;
+  font-size: 1.4em;
+  text-transform: uppercase;
+}
