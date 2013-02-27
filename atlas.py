@@ -60,7 +60,11 @@ def get_names(branch):
         affected = unstable_affected
     for fi in sorted(os.listdir(".")):
         if fi[-4:] == ".xml":
-            tree = etree.parse(fi)
+            try:
+                tree = etree.parse(fi)
+            except:
+                # Parsing this ruleset failed for some reason.
+                continue
             if tree.xpath("/ruleset"):
                 dfo = bool(tree.xpath("/ruleset/@default_off"))
                 name = tree.xpath("/ruleset/@name")[0]
