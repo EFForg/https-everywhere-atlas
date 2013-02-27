@@ -29,7 +29,7 @@ def clone_or_update():
     if os.path.isdir("https-everywhere"):
         os.chdir("https-everywhere/src/chrome/content/rules")
         unstable()
-        result = subprocess.call(["git", "pull"])
+        result = subprocess.call(["git", "pull", "-q"])
         if result != 0:
             raise Exception, "Could not pull updates"
     else:
@@ -38,19 +38,17 @@ def clone_or_update():
             raise Exception, "Could not clone %s" % HTTPS_E
 
 def stable():
-    if subprocess.call(["git", "checkout", stable_branch]) != 0:
+    if subprocess.call(["git", "checkout", "-q", stable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % stable_branch
-    if subprocess.call(["git", "merge", "origin/" + stable_branch]) != 0:
+    if subprocess.call(["git", "merge", "-q", "origin/" + stable_branch]) != 0:
         raise Exception, "Could not merge from origin on branch %s" % stable_branch
-#    return subprocess.check_output(["git", "log", "-1", "--pretty=format:%h %ai"])
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def unstable():
-    if subprocess.call(["git", "checkout", unstable_branch]) != 0:
+    if subprocess.call(["git", "checkout", "-q", unstable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % unstable_branch
-    if subprocess.call(["git", "merge", "origin/" + unstable_branch]) != 0:
+    if subprocess.call(["git", "merge", "-q", "origin/" + unstable_branch]) != 0:
         raise Exception, "Could not merge from origin on branch %s" % unstable_branch
-    #return subprocess.check_output(["git", "log", "-1", "--pretty=format:%h %ai"])
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def get_names(branch):
@@ -87,7 +85,6 @@ def get_names(branch):
                         # subdomain).  In this unusual case, just list the
                         # higher level domain, without the *. part.
                         host = host[2:]
-                    # print host
                     affected.setdefault(host, [])
                     host_data = (unicode(fi, "utf-8"), name, dfo, unicode(etree.tostring(tree)).encode("utf-8"))
                     affected[host].append(host_data)
@@ -97,11 +94,11 @@ def get_names(branch):
 
 clone_or_update()
 
-sys.stderr.write("Checking unstable branch master:\n")
+# sys.stderr.write("Checking unstable branch master:\n")
 unstable_as_of = unstable()
 get_names(unstable_branch)
 
-sys.stderr.write("Checking stable branch %s:\n" % stable_branch)
+# sys.stderr.write("Checking stable branch %s:\n" % stable_branch)
 stable_as_of = stable()
 get_names(stable_branch)
 
@@ -156,7 +153,6 @@ for n in domains:
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrite requests to
                       <b>%s</b> (or its subdomains).""" % n
-    print "Domain", n
     if n in stable_affected:
         d["stable_affected"] = True
         if not d["affected_releases"]:
