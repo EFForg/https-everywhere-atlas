@@ -152,14 +152,16 @@ for n in domains:
         d["affected_releases"] = """The stable and development releases of
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrite requests to
-                      <b>%s</b> (or its subdomains).""" % n
+                      <b>%s</b> (or its subdomains). Millions of browsers
+                      will be affected by these rewrites.""" % n
     if n in stable_affected:
         d["stable_affected"] = True
         if not d["affected_releases"]:
             d["affected_releases"] = """The stable release of
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains).""" % n
+                      <b>%s</b> (or its subdomains). Millions of browsers
+                      will be affected by these rewrites.""" % n
         d["stable_enabled"] = []
         d["stable_disabled"] = []
         for effect in stable_affected[n]:
@@ -176,7 +178,9 @@ for n in domains:
             d["affected_releases"] = """The development release of
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains).""" % n
+                      <b>%s</b> (or its subdomains). In the future,
+                      millions of browsers will be affected by these
+                      rewrites.""" % n
         d["unstable_enabled"] = []
         d["unstable_disabled"] = []
         for effect in unstable_affected[n]:

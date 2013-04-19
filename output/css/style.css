@@ -17,8 +17,7 @@ body {
 
 #wrapper {
   padding-top: 150px;
-  width: 800px;
-  margin: 0 auto;
+  margin: 0 10px;
   background-image: url('../images/logo.jpg');
   background-repeat: no-repeat;
   background-position: top center;
@@ -70,6 +69,7 @@ a:hover, a:active {
 .rule-block {
   border: 1px solid #999;
   padding: 20px;
+  margin-bottom: 20px;
 }
 
 .rule-block pre {
@@ -87,4 +87,10 @@ a:hover, a:active {
   text-align: center;
   font-size: 1.4em;
   text-transform: uppercase;
+}
+
+@media (min-width: 768px) {
+  #wrapper {
+    margin: 0 100px;
+  }
 }
