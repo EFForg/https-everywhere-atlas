@@ -179,7 +179,7 @@ for n in domains:
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
                       <b>%s</b> (or its subdomains). In the future,
-                      millions of browsers will be affected by these
+                      millions of users will be affected by these
                       rewrites.""" % n
         d["unstable_enabled"] = []
         d["unstable_disabled"] = []
