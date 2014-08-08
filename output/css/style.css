@@ -83,6 +83,15 @@ a:hover, a:active {
   margin: 0;
 }
 
+#search input {
+  width: 100%;
+  margin-top: 1em;
+}
+
+#results a {
+  display: block;
+}
+
 #letters {
   text-align: center;
   font-size: 1.4em;

@@ -8,12 +8,37 @@
       <h1>HTTPS Everywhere Atlas</h1>
 
       <div id="content">
-        <p>Are you a website operator? Click on a letter below to see domain names of sites (beginning with that letter) that HTTPS Everywhere rules affect.</p>
+        <p>Are you a website operator? Click on a letter or search below to see
+        domain names of sites (beginning with that letter) that HTTPS
+        Everywhere rules affect.</p>
 
         <div id="letters">
           {{#letters}} <a href="letters/{{letter}}.html">{{letter}}</a> {{/letters}}
         </div>
+
+        <form id="search"><input type=text></form>
+        <div id="results"></div>
+
       </div>
     </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+      var domains = {{domains}};
+      var query = window.location.toString().split('?')[1];
+      if (query && query.length) {
+        $('#results').text("Domains matching " + query);
+        $(domains).each(function(i, domain) {
+          if (domain.indexOf(query) >= 0) {
+            var el = $('<a href="./domains/' + domain + '.html">').text(domain);
+            $('#results').append(el);
+          }
+        });
+      }
+
+      $('#search').submit(function(e) {
+        e.preventDefault();
+        window.location = "?" + $('#search input').val();
+      });
+    </script>
   </body>
 </html>

@@ -110,7 +110,7 @@ first_letters_list = sorted(set(n[0] for n in domains))
 first_letters = []
 for l in first_letters_list:
     first_letters.append({ 'letter': l })
-output = pystache.render(index_template, { 'letters': first_letters })
+output = pystache.render(index_template, { 'letters': first_letters, 'domains': domains})
 open("output/index.html", "w").write(output.encode("utf-8"))
 
 def letter_domain_pairs(domains):
