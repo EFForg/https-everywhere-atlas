@@ -11,7 +11,7 @@ if cmd_subfolder not in sys.path:
 import pystache
 from lxml import etree
 
-HTTPS_E = "git://git.torproject.org/git/https-everywhere.git"
+HTTPS_E = "https://git.torproject.org/git/https-everywhere.git"
 unstable_branch = "master"
 stable_branch = "3.0"
 
