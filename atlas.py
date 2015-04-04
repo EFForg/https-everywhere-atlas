@@ -11,9 +11,9 @@ if cmd_subfolder not in sys.path:
 import pystache
 from lxml import etree
 
-HTTPS_E = "https://git.torproject.org/git/https-everywhere.git"
+HTTPS_E = "https://github.com/EFForg/https-everywhere.git"
 unstable_branch = "master"
-stable_branch = "3.0"
+stable_branch = "stable"
 
 ps = publicsuffix.PublicSuffixList()
 
