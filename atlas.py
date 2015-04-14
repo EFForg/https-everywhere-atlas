@@ -149,19 +149,15 @@ for n in domains:
     d["stable_affected"] = False
     d["unstable_affected"] = False
     if n in stable_affected and n in unstable_affected:
-        d["affected_releases"] = """The stable and development releases of
-                      <a href="https://www.eff.org/https-everywhere">HTTPS
-                      Everywhere</a> currently rewrite requests to
-                      <b>%s</b> (or its subdomains). Millions of browsers
-                      will be affected by these rewrites.""" % n
+        d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
+                      Everywhere</a> currently rewrites requests to
+                      <b>%s</b> (or its subdomains).""" % n
     if n in stable_affected:
         d["stable_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """The stable release of
-                      <a href="https://www.eff.org/https-everywhere">HTTPS
+            d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains). Millions of browsers
-                      will be affected by these rewrites.""" % n
+                      <b>%s</b> (or its subdomains).""" % n
         d["stable_enabled"] = []
         d["stable_disabled"] = []
         for effect in stable_affected[n]:
@@ -175,12 +171,12 @@ for n in domains:
     if n in unstable_affected:
         d["unstable_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """The development release of
+            d["affected_releases"] = """The master branch of
                       <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains). In the future,
-                      millions of users will be affected by these
-                      rewrites.""" % n
+                      <b>%s</b> (or its subdomains). These rewrites will
+                      take effect in a future release.
+                      """ % n
         d["unstable_enabled"] = []
         d["unstable_disabled"] = []
         for effect in unstable_affected[n]:
