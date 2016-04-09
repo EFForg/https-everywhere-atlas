@@ -12,8 +12,8 @@ import pystache
 from lxml import etree
 
 HTTPS_E = "https://github.com/EFForg/https-everywhere.git"
-unstable_branch = "master"
-stable_branch = "stable"
+release_branch = "release"
+stable_branch = "master"
 
 ps = publicsuffix.PublicSuffixList()
 
@@ -23,12 +23,12 @@ domain_template = open("templates/domain.mustache").read()
 redirect_template = open("templates/redirect.mustache").read()
 
 stable_affected = {}
-unstable_affected = {}
+release_affected = {}
 
 def clone_or_update():
     if os.path.isdir("https-everywhere"):
         os.chdir("https-everywhere/src/chrome/content/rules")
-        unstable()
+        stable()
         result = subprocess.call(["git", "pull", "-q"])
         if result != 0:
             raise Exception, "Could not pull updates"
@@ -44,18 +44,18 @@ def stable():
         raise Exception, "Could not merge from origin on branch %s" % stable_branch
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
-def unstable():
-    if subprocess.call(["git", "checkout", "-q", unstable_branch]) != 0:
-        raise Exception, "Could not switch to branch %s" % unstable_branch
-    if subprocess.call(["git", "merge", "-q", "origin/" + unstable_branch]) != 0:
-        raise Exception, "Could not merge from origin on branch %s" % unstable_branch
+def release():
+    if subprocess.call(["git", "checkout", "-q", release_branch]) != 0:
+        raise Exception, "Could not switch to branch %s" % release_branch
+    if subprocess.call(["git", "merge", "-q", "origin/" + release_branch]) != 0:
+        raise Exception, "Could not merge from origin on branch %s" % release_branch
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def get_names(branch):
     if branch == stable_branch:
         affected = stable_affected
     else:
-        affected = unstable_affected
+        affected = release_affected
     for fi in sorted(os.listdir(".")):
         if fi[-4:] == ".xml":
             try:
@@ -94,17 +94,15 @@ def get_names(branch):
 
 clone_or_update()
 
-# sys.stderr.write("Checking unstable branch master:\n")
-unstable_as_of = unstable()
-get_names(unstable_branch)
+release_as_of = release()
+get_names(release_branch)
 
-# sys.stderr.write("Checking stable branch %s:\n" % stable_branch)
 stable_as_of = stable()
 get_names(stable_branch)
 
 os.chdir("../../../../..")
 
-domains = sorted(set(stable_affected.keys() + unstable_affected.keys()))
+domains = sorted(set(stable_affected.keys() + release_affected.keys()))
 
 first_letters_list = sorted(set(n[0] for n in domains))
 first_letters = []
@@ -143,21 +141,24 @@ for letter, domains_index in letter_domain_pairs(domains):
 for n in domains:
     d = {}
     d["stable_as_of"] = stable_as_of
-    d["unstable_as_of"] = unstable_as_of
+    d["release_as_of"] = release_as_of
     d["domain"] = n
     d["affected_releases"] = ""
     d["stable_affected"] = False
-    d["unstable_affected"] = False
-    if n in stable_affected and n in unstable_affected:
+    d["release_affected"] = False
+    if n in stable_affected and n in release_affected:
         d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
                       <b>%s</b> (or its subdomains).""" % n
     if n in stable_affected:
         d["stable_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
+            d["affected_releases"] = """The master branch of
+                      <a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains).""" % n
+                      <b>%s</b> (or its subdomains). These rewrites will
+                      take effect in a future release.
+                      """ % n
         d["stable_enabled"] = []
         d["stable_disabled"] = []
         for effect in stable_affected[n]:
@@ -168,25 +169,25 @@ for n in domains:
                 d["stable_enabled"].append({"rule_text": xml, "git_link": fi})
         if d["stable_disabled"]: d["stable_has_disabled"] = True
         if d["stable_enabled"]: d["stable_has_enabled"] = True
-    if n in unstable_affected:
-        d["unstable_affected"] = True
+    if n in release_affected:
+        d["release_affected"] = True
         if not d["affected_releases"]:
-            d["affected_releases"] = """The master branch of
-                      <a href="https://www.eff.org/https-everywhere">HTTPS
+            d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
                       Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains). These rewrites will
-                      take effect in a future release.
-                      """ % n
-        d["unstable_enabled"] = []
-        d["unstable_disabled"] = []
-        for effect in unstable_affected[n]:
+                      <b>%s</b> (or its subdomains).""" % n
+        d["release_enabled"] = []
+        d["release_disabled"] = []
+        for effect in release_affected[n]:
             fi, name, dfo, xml = effect
             if dfo:
-                d["unstable_disabled"].append({"rule_text": xml, "git_link": fi})
+                d["release_disabled"].append({"rule_text": xml, "git_link": fi})
             else:
-                d["unstable_enabled"].append({"rule_text": xml, "git_link": fi})
-        if d["unstable_disabled"]: d["unstable_has_disabled"] = True
-        if d["unstable_enabled"]: d["unstable_has_enabled"] = True
+                d["release_enabled"].append({"rule_text": xml, "git_link": fi})
+        if d["release_disabled"]: d["release_has_disabled"] = True
+        if d["release_enabled"]: d["release_has_enabled"] = True
+
+    d['stable_branch'] = stable_branch
+    d['release_branch'] = release_branch
 
     output = pystache.render(domain_template, d)
     open("output/domains/" + n + ".html", "w").write(output.encode("utf-8"))

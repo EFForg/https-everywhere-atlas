@@ -37,7 +37,7 @@
                 <pre>{{rule_text}}</pre>
 
                 <p>
-                  <a href="https://github.com/EFForg/https-everywhere/blob/stable/src/chrome/content/rules/{{git_link}}"
+                  <a href="https://github.com/EFForg/https-everywhere/blob/{{stable_branch}}/src/chrome/content/rules/{{git_link}}"
                     >{{git_link}}</a>
                   &nbsp;&nbsp;
                   <a href="https://www.eff.org/https-everywhere/development"
@@ -54,7 +54,7 @@
               <div class="rule-block">
                 <pre>{{rule_text}}</pre>
                 <p>
-                  <a href="https://github.com/EFForg/https-everywhere/blob/stable/src/chrome/content/rules/{{git_link}}"
+                  <a href="https://github.com/EFForg/https-everywhere/blob/{{stable_branch}}/src/chrome/content/rules/{{git_link}}"
                     >{{git_link}}</a>
                   &nbsp;&nbsp;
                   <a href="https://www.eff.org/https-everywhere/development"
@@ -65,27 +65,27 @@
           {{/stable_has_disabled}}
         {{/stable_affected}}
 
-        {{#unstable_affected}}
-          {{#unstable_has_enabled}}
-            <p>The development branch contains the following rules that are enabled by default:</p>
+        {{#release_affected}}
+          {{#release_has_enabled}}
+            <p>The release branch contains the following rules that are enabled by default:</p>
             
-            {{#unstable_enabled}}
+            {{#release_enabled}}
               <div class="rule-block">
                 <pre>{{rule_text}}</pre>
                 <p>
-                  <a href="https://github.com/EFForg/https-everywhere/blob/master/src/chrome/content/rules/{{git_link}}"
+                <a href="https://github.com/EFForg/https-everywhere/blob/{{release_branch}}/src/chrome/content/rules/{{git_link}}"
                     >{{git_link}}</a>
                   &nbsp;&nbsp;
                   <a href="https://www.eff.org/https-everywhere/development"
                     >File a bug</a>
                 </p>
               </div>
-            {{/unstable_enabled}}
-          {{/unstable_has_enabled}}
+            {{/release_enabled}}
+          {{/release_has_enabled}}
 
-          {{#unstable_has_disabled}}
-            <p>The development branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):</p>
-            {{#unstable_disabled}}
+          {{#release_has_disabled}}
+            <p>The release branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):</p>
+            {{#release_disabled}}
               <div class="rule-block">
                 <pre>{{rule_text}}</pre>
                 <p>
@@ -95,9 +95,9 @@
                     >File a bug</a>
                 </p>
               </div>
-            {{/unstable_disabled}}
-          {{/unstable_has_disabled}}
-        {{/unstable_affected}}
+            {{/release_disabled}}
+          {{/release_has_disabled}}
+        {{/release_affected}}
 
         <p>
           The HTTPS Everywhere developers welcome corrections and updates to rules. Please see our
@@ -108,9 +108,9 @@
           that the bug is marked as applying to HTTPS Everywhere.
         </p>
         <h3>Information current as of:<h3><br />
-         <a href="https://github.com/EFForg/https-everywhere/commits/stable">current release</a> {{stable_as_of}};
+         <a href="https://github.com/EFForg/https-everywhere/commits/{{release_branch}}">current release</a> {{release_as_of}};
          <br />
-         <a href="https://github.com/EFForg/https-everywhere/commits/master">next release</a> {{unstable_as_of}};
+         <a href="https://github.com/EFForg/https-everywhere/commits/{{stable_branch}}">next release</a> {{stable_as_of}};
       </div>
 
     </div>
