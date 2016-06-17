@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../highlight.js/styles/default.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <script src="../highlight.js/highlight.pack.js" type="text/javascript"></script>
+    <script src="../ruleset_domain.js" type="text/javascript"></script>
     <script type="text/javascript">
     function syntax_highlight() {
       hljs.initHighlighting();
@@ -14,6 +15,8 @@
         hljs.highlightBlock(pre_tags[i]);
       }
     }
+    stable_hosts = {{{stable_hosts}}};
+    release_hosts = {{{release_hosts}}};
     </script>
   </head>
   <body onload="syntax_highlight()">
@@ -22,15 +25,15 @@
 
       <div id="content">
 
-        <h2>Domain: {{domain}}</h2>
+        <h2 id="domain_name"></h2>
 
-        <p>{{{affected_releases}}}</p>
+        <p id="affected_releases"></p>
 
         <p><i>Embedded content loaded from third-party domains (for example, YouTube, Google Analytics, ad networks, or CDNs) may also be affected.  You can test this by loading the web page in question in a browser with HTTPS Everywhere installed and pulling down the HTTPS Everywhere rules menu.  This will show a list of HTTPS Everywhere rules that were applied as the page was loaded, including rules that might have affected embedded content from other domains.</i></p> 
 
-        {{#stable_affected}}
+        <div class='stable_affected'>
           {{#stable_has_enabled}}
-            <p>The stable (as yet unreleased) branch contains the following rules that are enabled by default:</p>
+            <p>The stable (as yet unreleased) branch contains the following rule that is enabled by default:</p>
 
             {{#stable_enabled}}
               <div class="rule-block">
@@ -48,7 +51,7 @@
           {{/stable_has_enabled}}
 
           {{#stable_has_disabled}}
-            <p>The stable (as yet unreleased) branch contains the following rules that are <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):
+            <p>The stable (as yet unreleased) branch contains the following rule that is <strong>disabled by default</strong> (so very few users' browsing is likely to be affected by their action):
             
             {{#stable_disabled}}
               <div class="rule-block">
@@ -63,9 +66,10 @@
               </div>
             {{/stable_disabled}}
           {{/stable_has_disabled}}
-        {{/stable_affected}}
 
-        {{#release_affected}}
+        </div>
+
+        <div class='release_affected'>
           {{#release_has_enabled}}
             <p>The release branch contains the following rules that are enabled by default:</p>
             
@@ -97,7 +101,8 @@
               </div>
             {{/release_disabled}}
           {{/release_has_disabled}}
-        {{/release_affected}}
+
+        </div>
 
         <p>
           The HTTPS Everywhere developers welcome corrections and updates to rules. Please see our
@@ -114,5 +119,8 @@
       </div>
 
     </div>
+    <script type='text/javascript'>
+      setup_ui();
+    </script>
   </body>
 </html>

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, sys, publicsuffix, inspect
+import subprocess, os, sys, publicsuffix, inspect, json, shutil
 
 # make it so we can import python modules directly from this git repo
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
@@ -19,11 +19,13 @@ ps = publicsuffix.PublicSuffixList()
 
 index_template = open("templates/index.mustache").read()
 letter_template = open("templates/letter.mustache").read()
-domain_template = open("templates/domain.mustache").read()
+ruleset_template = open("templates/ruleset.mustache").read()
 redirect_template = open("templates/redirect.mustache").read()
 
-stable_affected = {}
-release_affected = {}
+domain_rulesets = {}
+
+stable_rulesets = {}
+release_rulesets = {}
 
 def clone_or_update():
     if os.path.isdir("https-everywhere"):
@@ -53,9 +55,9 @@ def release():
 
 def get_names(branch):
     if branch == stable_branch:
-        affected = stable_affected
+        rulesets = stable_rulesets
     else:
-        affected = release_affected
+        rulesets = release_rulesets
     for fi in sorted(os.listdir(".")):
         if fi[-4:] == ".xml":
             try:
@@ -67,7 +69,11 @@ def get_names(branch):
                 dfo = bool(tree.xpath("/ruleset/@default_off"))
                 name = tree.xpath("/ruleset/@name")[0]
                 name = unicode(name).encode("utf-8")
-                hosts = []
+                filename = unicode(fi, "utf-8")
+
+                current_ruleset = [name, dfo, unicode(etree.tostring(tree)).encode("utf-8")]
+                rulesets[filename] = current_ruleset
+
                 for host in set(map(ps.get_public_suffix,  tree.xpath("/ruleset/target/@host"))):
                     host = unicode(host)
                     host = host.encode("idna")
@@ -85,10 +91,13 @@ def get_names(branch):
                         # subdomain).  In this unusual case, just list the
                         # higher level domain, without the *. part.
                         host = host[2:]
-                    affected.setdefault(host, [])
-                    host_data = (unicode(fi, "utf-8"), name, dfo, unicode(etree.tostring(tree)).encode("utf-8"))
-                    affected[host].append(host_data)
-                    hosts.append(host)
+
+                    domain_rulesets.setdefault(host, set())
+                    domain_rulesets[host].add(filename)
+
+                    rulesets.setdefault(filename, [])
+                    rulesets[filename].append(host)
+
                 if dfo: out = "([file %s] %s  %s)"
                 else: out = "[file %s] %s  %s"
 
@@ -102,7 +111,15 @@ get_names(stable_branch)
 
 os.chdir("../../../../..")
 
-domains = sorted(set(stable_affected.keys() + release_affected.keys()))
+def hosts_to_filenames(host):
+    rulesets_for_host = len(domain_rulesets[host])
+    if rulesets_for_host != 1:
+        return [host + '-' + str(current) for current in range(1, rulesets_for_host + 1)]
+    else:
+        return [host]
+
+domains_nested = map(hosts_to_filenames, sorted(domain_rulesets.keys()))
+domains = [item for sublist in domains_nested for item in sublist]
 
 first_letters_list = sorted(set(n[0] for n in domains))
 first_letters = []
@@ -124,8 +141,10 @@ def letter_domain_pairs(domains):
 
 redirect_output = pystache.render(redirect_template, { 'redirect': '../' })
 
-if not os.path.exists('output/domains'):
-    os.mkdir('output/domains')
+if os.path.exists('output/domains'):
+    shutil.rmtree("output/domains")
+os.mkdir('output/domains')
+
 open("output/domains/index.html", "w").write(redirect_output.encode("utf-8"))
 
 if not os.path.exists('output/letters'):
@@ -138,56 +157,52 @@ for letter, domains_index in letter_domain_pairs(domains):
                                                 'domains': domains_index })
     open("output/letters/%s.html" % letter, "w").write(output.encode("utf-8"))
 
-for n in domains:
+for domain in domain_rulesets:
+    if len(domain_rulesets[domain]) > 1:
+        num = 1
+        for ruleset_filename in domain_rulesets[domain]:
+            os.symlink("../rulesets/" + ruleset_filename + ".html", "output/domains/" + domain + "-" + str(num) + ".html")
+            num += 1
+    else:
+        os.symlink("../rulesets/" + domain_rulesets[domain].pop() + ".html", "output/domains/" + domain + ".html")
+
+if not os.path.exists('output/rulesets'):
+    os.mkdir('output/rulesets')
+
+for ruleset in set(stable_rulesets.keys() + release_rulesets.keys()):
     d = {}
     d["stable_as_of"] = stable_as_of
     d["release_as_of"] = release_as_of
-    d["domain"] = n
-    d["affected_releases"] = ""
     d["stable_affected"] = False
     d["release_affected"] = False
-    if n in stable_affected and n in release_affected:
-        d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
-                      Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains).""" % n
-    if n in stable_affected:
-        d["stable_affected"] = True
-        if not d["affected_releases"]:
-            d["affected_releases"] = """The master branch of
-                      <a href="https://www.eff.org/https-everywhere">HTTPS
-                      Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains). These rewrites will
-                      take effect in a future release.
-                      """ % n
-        d["stable_enabled"] = []
-        d["stable_disabled"] = []
-        for effect in stable_affected[n]:
-            fi, name, dfo, xml = effect
-            if dfo:
-                d["stable_disabled"].append({"rule_text": xml, "git_link": fi})
-            else:
-                d["stable_enabled"].append({"rule_text": xml, "git_link": fi})
+    d["stable_hosts"] = []
+    d["release_hosts"] = []
+
+    if ruleset in stable_rulesets:
+        d["stable_hosts"] = json.dumps(stable_rulesets[ruleset][3:])
+        name, dfo, xml = stable_rulesets[ruleset][:3]
+        d["stable_enabled"] = False
+        d["stable_disabled"] = False
+        if dfo:
+            d["stable_disabled"] = {"rule_text": xml, "git_link": ruleset}
+        else:
+            d["stable_enabled"] = {"rule_text": xml, "git_link": ruleset}
         if d["stable_disabled"]: d["stable_has_disabled"] = True
         if d["stable_enabled"]: d["stable_has_enabled"] = True
-    if n in release_affected:
-        d["release_affected"] = True
-        if not d["affected_releases"]:
-            d["affected_releases"] = """<a href="https://www.eff.org/https-everywhere">HTTPS
-                      Everywhere</a> currently rewrites requests to
-                      <b>%s</b> (or its subdomains).""" % n
-        d["release_enabled"] = []
-        d["release_disabled"] = []
-        for effect in release_affected[n]:
-            fi, name, dfo, xml = effect
-            if dfo:
-                d["release_disabled"].append({"rule_text": xml, "git_link": fi})
-            else:
-                d["release_enabled"].append({"rule_text": xml, "git_link": fi})
+    if ruleset in release_rulesets:
+        d["release_hosts"] = json.dumps(release_rulesets[ruleset][3:])
+        name, dfo, xml = release_rulesets[ruleset][:3]
+        d["release_enabled"] = False
+        d["release_disabled"] = False
+        if dfo:
+            d["release_disabled"] = {"rule_text": xml, "git_link": ruleset}
+        else:
+            d["release_enabled"] = {"rule_text": xml, "git_link": ruleset}
         if d["release_disabled"]: d["release_has_disabled"] = True
         if d["release_enabled"]: d["release_has_enabled"] = True
 
     d['stable_branch'] = stable_branch
     d['release_branch'] = release_branch
 
-    output = pystache.render(domain_template, d)
-    open("output/domains/" + n + ".html", "w").write(output.encode("utf-8"))
+    output = pystache.render(ruleset_template, d)
+    open("output/rulesets/" + ruleset + ".html", "w").write(output.encode("utf-8"))
