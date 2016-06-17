@@ -1,5 +1,5 @@
 function setup_ui(){
-  var domain = document.location.pathname.replace(/\/domains\//, '').replace(/(-[0-9]+)?.html/,'');
+  var domain = document.location.pathname.replace(/^.*\/domains\//, '').replace(/(-[0-9]+)?.html/,'');
   var stable_affected = (stable_hosts.indexOf(domain) != -1);
   var release_affected = (release_hosts.indexOf(domain) != -1);
 
@@ -16,9 +16,16 @@ function setup_ui(){
   document.getElementById("affected_releases").innerHTML = affected_releases;
 
   if(!stable_affected){
-    document.getElementById("stable_affected").style.display = "none";
+    var stable_affected_div = document.getElementById("stable_affected");
+    if(stable_affected_div){
+      stable_affected_div.style.display = "none";
+    }
   }
   if(!release_affected){
-    document.getElementById("release_affected").style.display = "none";
+    var release_affected_div = document.getElementById("release_affected");
+    if(release_affected_div){
+      release_affected_div.style.display = "none";
+    }
+
   }
 }
