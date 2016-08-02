@@ -27,6 +27,8 @@ domain_rulesets = {}
 stable_rulesets = {}
 release_rulesets = {}
 
+renderer = pystache.Renderer(string_encoding='utf-8')
+
 def clone_or_update():
     if os.path.isdir("https-everywhere"):
         os.chdir("https-everywhere/src/chrome/content/rules")
@@ -71,7 +73,7 @@ def get_names(branch):
                 name = unicode(name).encode("utf-8")
                 filename = unicode(fi, "utf-8")
 
-                current_ruleset = [name, dfo, unicode(etree.tostring(tree)).encode("utf-8")]
+                current_ruleset = [name, dfo, etree.tostring(tree, encoding='utf-8')]
                 rulesets[filename] = current_ruleset
 
                 for host in set(map(ps.get_public_suffix,  tree.xpath("/ruleset/target/@host"))):
@@ -204,5 +206,5 @@ for ruleset in set(stable_rulesets.keys() + release_rulesets.keys()):
     d['stable_branch'] = stable_branch
     d['release_branch'] = release_branch
 
-    output = pystache.render(ruleset_template, d)
+    output = renderer.render(ruleset_template, d)
     open("output/rulesets/" + ruleset + ".html", "w").write(output.encode("utf-8"))
