@@ -24,7 +24,7 @@
     <script src="jquery.min.js"></script>
     <script>
       var domains = {{domains}};
-      var query = window.location.toString().split('?')[1];
+      var query = window.location.toString().split('?')[1].toLowerCase();
       if (query && query.length) {
         $('#results').text("Domains matching " + query);
         $(domains).each(function(i, domain) {
@@ -37,7 +37,7 @@
 
       $('#search').submit(function(e) {
         e.preventDefault();
-        window.location = "?" + $('#search input').val();
+        window.location = "?" + $('#search input').val().toLowerCase();
       });
     </script>
   </body>
