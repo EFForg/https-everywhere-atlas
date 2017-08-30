@@ -24,8 +24,11 @@
     <script src="jquery.min.js"></script>
     <script>
       var domains = {{domains}};
-      var query = window.location.toString().split('?')[1].toLowerCase();
+      var query = window.location.toString().split('?')[1];
       if (query && query.length) {
+        // query should be case-insensitive
+        query = query.toLowerCase();
+      
         $('#results').text("Domains matching " + query);
         $(domains).each(function(i, domain) {
           if (domain.indexOf(query) >= 0) {
