@@ -5,3 +5,4 @@ output/domains
 output/rulesets
 output/letters
 output/index.html
+.venv

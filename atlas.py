@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import subprocess, os, sys, publicsuffix, inspect, json, shutil
+import subprocess, os, sys, publicsuffix, inspect, json, shutil, re
 
 # make it so we can import python modules directly from this git repo
 # http://stackoverflow.com/questions/279237/python-import-a-module-from-a-folder
@@ -55,6 +55,12 @@ def release():
         raise Exception, "Could not merge from origin on branch %s" % release_branch
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
+def public_suffix_wrapper(domain):
+    if re.match("^([0-9]{1,3}\.){3}[0-9]{1,3}$", domain):
+        return domain
+    else:
+        return ps.get_public_suffix(domain)
+
 def get_names(branch):
     if branch == stable_branch:
         rulesets = stable_rulesets
@@ -76,7 +82,7 @@ def get_names(branch):
                 current_ruleset = [name, dfo, etree.tostring(tree, encoding='utf-8')]
                 rulesets[filename] = current_ruleset
 
-                for host in set(map(ps.get_public_suffix,  tree.xpath("/ruleset/target/@host"))):
+                for host in set(map(public_suffix_wrapper,  tree.xpath("/ruleset/target/@host"))):
                     host = unicode(host)
                     host = host.encode("idna")
                     if host == "*":
