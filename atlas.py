@@ -29,22 +29,23 @@ def clone_or_update():
         if result != 0:
             raise Exception, "Could not pull updates"
     else:
-        result = subprocess.call(["git", "clone",  HTTPS_E])
+        result = subprocess.call(["./clone-https-everywhere.sh",  HTTPS_E, stable_branch, release_branch])
+        os.chdir("https-everywhere/src/chrome/content/rules")
         if result != 0:
             raise Exception, "Could not clone %s" % HTTPS_E
 
 def stable():
     if subprocess.call(["git", "checkout", "-q", stable_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % stable_branch
-    if subprocess.call(["git", "merge", "-q", "origin/" + stable_branch]) != 0:
-        raise Exception, "Could not merge from origin on branch %s" % stable_branch
+    if subprocess.call(["git", "pull", "-q", "origin", stable_branch]) != 0:
+        raise Exception, "Could not pull from origin on branch %s" % stable_branch
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def release():
     if subprocess.call(["git", "checkout", "-q", release_branch]) != 0:
         raise Exception, "Could not switch to branch %s" % release_branch
-    if subprocess.call(["git", "merge", "-q", "origin/" + release_branch]) != 0:
-        raise Exception, "Could not merge from origin on branch %s" % release_branch
+    if subprocess.call(["git", "pull", "-q", "origin", release_branch]) != 0:
+        raise Exception, "Could not pull from origin on branch %s" % release_branch
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def public_suffix_wrapper(domain):
