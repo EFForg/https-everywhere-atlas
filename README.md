@@ -2,6 +2,10 @@
 
 Track the status of rulesets for HTTPS Everywhere
 
+## Setup
+
+    pip install -r requirements.txt
+
 ## Building
 
     ./atlas.py
