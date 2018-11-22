@@ -24,9 +24,11 @@ COPY clone-https-everywhere.sh /opt/
 COPY graphics  /opt/graphics/
 COPY output /opt/output/
 COPY templates /opt/templates/
+COPY docker/entrypoint.sh /opt/docker/entrypoint.sh
 
 RUN ./clone-https-everywhere.sh https://github.com/efforg/https-everywhere.git master release
 VOLUME /opt/https-everywhere/
 VOLUME /opt/output/
 
 CMD ["cron", "-f"]
+ENTRYPOINT ["./docker/entrypoint.sh"]
