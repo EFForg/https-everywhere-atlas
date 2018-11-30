@@ -27,25 +27,25 @@ def clone_or_update():
         stable()
         result = subprocess.call(["git", "pull", "-q"])
         if result != 0:
-            raise Exception, "Could not pull updates"
+            raise Exception("Could not pull updates")
     else:
         result = subprocess.call(["./clone-https-everywhere.sh",  HTTPS_E, stable_branch, release_branch])
         os.chdir("https-everywhere/src/chrome/content/rules")
         if result != 0:
-            raise Exception, "Could not clone %s" % HTTPS_E
+            raise Exception("Could not clone {}".format(HTTPS_E))
 
 def stable():
     if subprocess.call(["git", "checkout", "-q", stable_branch]) != 0:
-        raise Exception, "Could not switch to branch %s" % stable_branch
+        raise Exception("Could not switch to branch {}".format(stable_branch))
     if subprocess.call(["git", "pull", "-q", "origin", stable_branch]) != 0:
-        raise Exception, "Could not pull from origin on branch %s" % stable_branch
+        raise Exception("Could not pull from origin on branch {}".format(stable_branch))
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def release():
     if subprocess.call(["git", "checkout", "-q", release_branch]) != 0:
-        raise Exception, "Could not switch to branch %s" % release_branch
+        raise Exception("Could not switch to branch {}".format(release_branch))
     if subprocess.call(["git", "pull", "-q", "origin", release_branch]) != 0:
-        raise Exception, "Could not pull from origin on branch %s" % release_branch
+        raise Exception("Could not pull from origin on branch {}".format(release_branch))
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def public_suffix_wrapper(domain):
@@ -69,15 +69,12 @@ def get_names(branch):
             if tree.xpath("/ruleset"):
                 dfo = bool(tree.xpath("/ruleset/@default_off"))
                 name = tree.xpath("/ruleset/@name")[0]
-                name = unicode(name).encode("utf-8")
-                filename = unicode(fi, "utf-8")
 
                 current_ruleset = [name, dfo, etree.tostring(tree, encoding='utf-8')]
-                rulesets[filename] = current_ruleset
+                rulesets[fi] = current_ruleset
 
                 for host in set(map(public_suffix_wrapper,  tree.xpath("/ruleset/target/@host"))):
-                    host = unicode(host)
-                    host = host.encode("idna")
+                    host = host.encode("idna").decode('utf-8')
                     if host == "*":
                         # This is a problem about wildcards at the end of
                         # target hosts.  Currently, we exclude such targets
@@ -94,10 +91,10 @@ def get_names(branch):
                         host = host[2:]
 
                     domain_rulesets.setdefault(host, set())
-                    domain_rulesets[host].add(filename)
+                    domain_rulesets[host].add(fi)
 
-                    rulesets.setdefault(filename, [])
-                    rulesets[filename].append(host)
+                    rulesets.setdefault(fi, [])
+                    rulesets[fi].append(host)
 
                 if dfo: out = "([file %s] %s  %s)"
                 else: out = "[file %s] %s  %s"
@@ -119,7 +116,7 @@ def hosts_to_filenames(host):
     else:
         return [host]
 
-domains_nested = map(hosts_to_filenames, sorted(domain_rulesets.keys()))
+domains_nested = list(map(hosts_to_filenames, sorted(domain_rulesets.keys())))
 domains = [item for sublist in domains_nested for item in sublist]
 
 first_letters_list = sorted(set(n[0] for n in domains))
@@ -127,7 +124,7 @@ first_letters = []
 for l in first_letters_list:
     first_letters.append({ 'letter': l })
 output = pystache.render(index_template, { 'letters': first_letters, 'domains': domains})
-open("output/index.html", "w").write(output.encode("utf-8"))
+open("output/index.html", "w").write(output)
 
 def letter_domain_pairs(domains):
     last_letter = domains[0][0]
@@ -146,17 +143,17 @@ if os.path.exists('output/domains'):
     shutil.rmtree("output/domains")
 os.mkdir('output/domains')
 
-open("output/domains/index.html", "w").write(redirect_output.encode("utf-8"))
+open("output/domains/index.html", "w").write(redirect_output)
 
 if not os.path.exists('output/letters'):
     os.mkdir('output/letters')
-open("output/letters/index.html", "w").write(redirect_output.encode("utf-8"))
+open("output/letters/index.html", "w").write(redirect_output)
 
 for letter, domains_index in letter_domain_pairs(domains):
     output = pystache.render(letter_template, { 'letters': first_letters,
                                                 'first_letter': letter,
                                                 'domains': domains_index })
-    open("output/letters/%s.html" % letter, "w").write(output.encode("utf-8"))
+    open("output/letters/%s.html" % letter, "w").write(output)
 
 for domain in domain_rulesets:
     if len(domain_rulesets[domain]) > 1:
@@ -170,7 +167,7 @@ for domain in domain_rulesets:
 if not os.path.exists('output/rulesets'):
     os.mkdir('output/rulesets')
 
-for ruleset in set(stable_rulesets.keys() + release_rulesets.keys()):
+for ruleset in set(list(stable_rulesets.keys()) + list(release_rulesets.keys())):
     d = {}
     d["stable_as_of"] = stable_as_of
     d["release_as_of"] = release_as_of
@@ -206,4 +203,4 @@ for ruleset in set(stable_rulesets.keys() + release_rulesets.keys()):
     d['release_branch'] = release_branch
 
     output = renderer.render(ruleset_template, d)
-    open("output/rulesets/" + ruleset + ".html", "w").write(output.encode("utf-8"))
+    open("output/rulesets/" + ruleset + ".html", "w").write(output)
