@@ -15,5 +15,7 @@ build:
   - git clone --depth 1 https://github.com/EFForg/https-everywhere-atlas
   - docker build --pull --no-cache --label "repo=$CI_PROJECT_URL" -t $IMAGE_NAME .
   - docker push $IMAGE_NAME
+  - "curl -X POST -F token=$TOKEN -F ref=$REF_NAME $PIPELINE_ENDPOINT"
+
   only:
   - master
