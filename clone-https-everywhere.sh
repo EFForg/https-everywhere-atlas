@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # Ensure we clone HTTPS Everywhere to a point where we have related histories
 # for both the `release` branch and the `master` branch.
 
