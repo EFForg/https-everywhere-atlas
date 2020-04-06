@@ -1,5 +1,5 @@
 FROM python:3.7
-MAINTAINER William Budington "bill@eff.org"
+LABEL maintainer="William Budington <bill@eff.org>, Alexis Hancock <alexis@eff.org>"
 WORKDIR /opt
 
 RUN apt-get update && \
