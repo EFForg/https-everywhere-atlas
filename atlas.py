@@ -25,7 +25,7 @@ def clone_or_update():
     if os.path.isdir("https-everywhere"):
         os.chdir("https-everywhere/src/chrome/content/rules")
         stable()
-        result = subprocess.call(["git", "pull", "-q"])
+        result = subprocess.call(["git", "pull", "--no-edit", "-q"])
         if result != 0:
             raise Exception("Could not pull updates")
     else:
@@ -37,14 +37,14 @@ def clone_or_update():
 def stable():
     if subprocess.call(["git", "checkout", "-q", stable_branch]) != 0:
         raise Exception("Could not switch to branch {}".format(stable_branch))
-    if subprocess.call(["git", "pull", "-q", "origin", stable_branch]) != 0:
+    if subprocess.call(["git", "pull", "--no-edit", "-q", "origin", stable_branch]) != 0:
         raise Exception("Could not pull from origin on branch {}".format(stable_branch))
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 
 def release():
     if subprocess.call(["git", "checkout", "-q", release_branch]) != 0:
         raise Exception("Could not switch to branch {}".format(release_branch))
-    if subprocess.call(["git", "pull", "-q", "origin", release_branch]) != 0:
+    if subprocess.call(["git", "pull", "--no-edit", "-q", "origin", release_branch]) != 0:
         raise Exception("Could not pull from origin on branch {}".format(release_branch))
     return subprocess.Popen(["git", "log", "-1", "--pretty=format:%h %ai"], stdout=subprocess.PIPE, stderr=None).stdout.read()
 

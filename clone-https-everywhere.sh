@@ -12,6 +12,6 @@ git checkout -b $2
 
 DEPTH=10
 
-while ! git pull --depth=$DEPTH origin $2; do
+while ! git pull --no-edit --depth=$DEPTH origin $2; do
   DEPTH=${DEPTH}0
 done
