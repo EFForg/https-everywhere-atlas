@@ -1,5 +1,4 @@
-FROM python:3.7
-LABEL maintainer="William Budington <bill@eff.org>, Alexis Hancock <alexis@eff.org>"
+FROM python:3.7 AS build
 WORKDIR /opt
 
 RUN apt-get update && \
@@ -24,11 +23,11 @@ COPY clone-https-everywhere.sh /opt/
 COPY graphics  /opt/graphics/
 COPY output /opt/output/
 COPY templates /opt/templates/
-COPY docker/entrypoint.sh /opt/docker/entrypoint.sh
 
 RUN ./clone-https-everywhere.sh https://github.com/efforg/https-everywhere.git master release
-VOLUME /opt/https-everywhere/
-VOLUME /opt/output/
+RUN ./atlas.py
 
-CMD ["cron", "-f"]
-ENTRYPOINT ["./docker/entrypoint.sh"]
+
+FROM conex.eff.org/techops/nginx-base:latest
+LABEL maintainer="William Budington <bill@eff.org>, Alexis Hancock <alexis@eff.org>"
+COPY --from=build /opt/output /var/www/html
